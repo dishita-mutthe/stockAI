@@ -23,13 +23,14 @@ class FundamentalsAgent(BaseAgent):
         self.fmp = fmp or FMPClient()
 
     async def collect(self, ticker: str) -> dict[str, Any]:
-        # Fan out the 5 FMP calls in parallel. return_exceptions=True keeps a
+        # Fan out the 6 FMP calls in parallel. return_exceptions=True keeps a
         # single bad endpoint (e.g. a renamed /stable/ slug) from killing the
         # whole agent — the LLM can still reason over whatever fields succeeded.
-        profile, income, ratios, cashflow, insider = await asyncio.gather(
+        profile, income, earnings, key_metrics, cashflow, insider = await asyncio.gather(
             self.fmp.profile(ticker),
             self.fmp.income_statement(ticker),
-            self.fmp.ratios_ttm(ticker),
+            self.fmp.earnings(ticker),
+            self.fmp.key_metrics(ticker),
             self.fmp.cash_flow(ticker),
             self.fmp.insider_trading(ticker),
             return_exceptions=True,
@@ -38,7 +39,8 @@ class FundamentalsAgent(BaseAgent):
         sources = {
             "profile": profile,
             "income_statement": income,
-            "ratios_ttm": ratios,
+            "earnings": earnings,
+            "key_metrics": key_metrics,
             "cash_flow": cashflow,
             "insider_trading": insider,
         }

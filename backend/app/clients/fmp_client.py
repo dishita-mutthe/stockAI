@@ -7,7 +7,8 @@ gone — everything is now ?symbol=AAPL query params.
 Free tier: 250 calls/day. Endpoints used:
   - /stable/profile?symbol={t}                market cap, sector, basics
   - /stable/income-statement?symbol={t}       revenue, net income, EPS
-  - /stable/ratios-ttm?symbol={t}             P/E, P/S
+  - /stable/earnings?symbol={t}               EPS actual vs estimate
+  - /stable/key-metrics?symbol={t}            Forward PE
   - /stable/cash-flow-statement?symbol={t}    free cash flow
   - /stable/insider-trading-search?symbol={t} executive buy/sell activity
 """
@@ -40,8 +41,11 @@ class FMPClient:
     async def income_statement(self, ticker: str, limit: int = 4) -> list[dict[str, Any]]:
         return await self._get("/stable/income-statement", {"symbol": ticker, "limit": limit})
 
-    async def ratios_ttm(self, ticker: str) -> list[dict[str, Any]]:
-        return await self._get("/stable/ratios-ttm", {"symbol": ticker})
+    async def earnings(self, ticker: str, limit: int = 4) -> list[dict[str, Any]]:
+        return await self._get("/stable/earnings", {"symbol": ticker, "limit": limit})
+
+    async def key_metrics(self, ticker: str, limit: int = 4) -> list[dict[str, Any]]:
+        return await self._get("/stable/key-metrics", {"symbol": ticker, "limit": limit})
 
     async def cash_flow(self, ticker: str, limit: int = 4) -> list[dict[str, Any]]:
         return await self._get(
