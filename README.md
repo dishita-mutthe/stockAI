@@ -30,7 +30,7 @@ Document.
 | Frontend     | React + Vite + TypeScript + Tailwind CSS     |
 | Backend      | Python 3.11+, FastAPI, Uvicorn               |
 | Agents       | LangGraph for orchestration & state          |
-| LLM          | Anthropic Claude (`claude-sonnet-4-20250514`)|
+| LLM          | Anthropic Claude (`claude-sonnet-4-6`)|
 | Storage      | SQLite (local file)                          |
 | Data sources | Financial Modeling Prep, Reddit, NewsData.io |
 
