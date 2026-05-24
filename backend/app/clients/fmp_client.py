@@ -1,11 +1,15 @@
 """Financial Modeling Prep client (BRD §6.1).
 
+NOTE: FMP deprecated the /api/v3/* paths on Aug 31, 2025 for new accounts and
+moved everyone to the /stable/* API. Path-style symbols (/profile/AAPL) are
+gone — everything is now ?symbol=AAPL query params.
+
 Free tier: 250 calls/day. Endpoints used:
-  - /v3/profile/{ticker}                  market cap, sector, basics
-  - /v3/income-statement/{ticker}         revenue, net income, EPS
-  - /v3/ratios-ttm/{ticker}               P/E, P/S
-  - /v3/cash-flow-statement/{ticker}      free cash flow
-  - /v3/insider-trading?symbol={ticker}   executive buy/sell activity
+  - /stable/profile?symbol={t}                market cap, sector, basics
+  - /stable/income-statement?symbol={t}       revenue, net income, EPS
+  - /stable/ratios-ttm?symbol={t}             P/E, P/S
+  - /stable/cash-flow-statement?symbol={t}    free cash flow
+  - /stable/insider-trading-search?symbol={t} executive buy/sell activity
 """
 
 from __future__ import annotations
@@ -16,7 +20,7 @@ import httpx
 
 from app.config import get_settings
 
-BASE_URL = "https://financialmodelingprep.com/api"
+BASE_URL = "https://financialmodelingprep.com"
 
 
 class FMPClient:
@@ -31,16 +35,18 @@ class FMPClient:
             return resp.json()
 
     async def profile(self, ticker: str) -> list[dict[str, Any]]:
-        return await self._get(f"/v3/profile/{ticker}")
+        return await self._get("/stable/profile", {"symbol": ticker})
 
     async def income_statement(self, ticker: str, limit: int = 4) -> list[dict[str, Any]]:
-        return await self._get(f"/v3/income-statement/{ticker}", {"limit": limit})
+        return await self._get("/stable/income-statement", {"symbol": ticker, "limit": limit})
 
     async def ratios_ttm(self, ticker: str) -> list[dict[str, Any]]:
-        return await self._get(f"/v3/ratios-ttm/{ticker}")
+        return await self._get("/stable/ratios-ttm", {"symbol": ticker})
 
     async def cash_flow(self, ticker: str, limit: int = 4) -> list[dict[str, Any]]:
-        return await self._get(f"/v3/cash-flow-statement/{ticker}", {"limit": limit})
+        return await self._get(
+            "/stable/cash-flow-statement", {"symbol": ticker, "limit": limit}
+        )
 
     async def insider_trading(self, ticker: str) -> list[dict[str, Any]]:
-        return await self._get("/v4/insider-trading", {"symbol": ticker})
+        return await self._get("/stable/insider-trading-search", {"symbol": ticker})
