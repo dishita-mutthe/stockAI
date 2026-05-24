@@ -10,6 +10,7 @@ from typing import Any
 
 from app.clients.llm_client import LLMClient
 from app.models.schemas import AgentName, AgentResult, AgentStatus, Signal
+from app.utils.redaction import redact
 
 logger = logging.getLogger(__name__)
 
@@ -73,13 +74,16 @@ class BaseAgent(ABC):
             )
         except Exception as exc:  # noqa: BLE001 — agents must never crash the workflow
             logger.exception("%s failed for %s", self.name, ticker)
+            # redact() strips any apikey baked into the exception string before
+            # it flows out through the API response to the frontend.
+            safe_message = redact(str(exc))
             return AgentResult(
                 agent=self.name,
                 ticker=ticker,
                 status=AgentStatus.ERROR,
                 signal=Signal.NEUTRAL,
-                summary=f"Agent error: {exc}",
-                error=str(exc),
+                summary=f"Agent error: {safe_message}",
+                error=safe_message,
             )
         finally:
             logger.info(

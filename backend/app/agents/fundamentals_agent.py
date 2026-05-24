@@ -11,6 +11,7 @@ from app.agents.base import BaseAgent
 from app.clients.fmp_client import FMPClient
 from app.models.schemas import AgentName
 from app.prompts import fundamentals as prompts
+from app.utils.redaction import redact
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +61,10 @@ class FundamentalsAgent(BaseAgent):
         errors: dict[str, str] = {}
         for key, value in sources.items():
             if isinstance(value, Exception):
-                errors[key] = f"{type(value).__name__}: {value}"
+                # redact() strips the apikey from any URL httpx baked into the
+                # exception message — that string ends up in _fetch_errors and
+                # eventually in the frontend UI.
+                errors[key] = redact(f"{type(value).__name__}: {value}")
                 logger.warning("FMP %s failed for %s: %s", key, ticker, value)
                 payload[key] = None
             else:
