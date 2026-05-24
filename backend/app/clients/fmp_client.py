@@ -8,9 +8,11 @@ Free tier: 250 calls/day. Endpoints used:
   - /stable/profile?symbol={t}                market cap, sector, basics
   - /stable/income-statement?symbol={t}       revenue, net income, EPS
   - /stable/earnings?symbol={t}               EPS actual vs estimate
-  - /stable/key-metrics?symbol={t}            Forward PE
+  - /stable/key-metrics?symbol={t}            forward P/E
   - /stable/cash-flow-statement?symbol={t}    free cash flow
-  - /stable/insider-trading-search?symbol={t} executive buy/sell activity
+
+Insider trading was dropped from v1 — FMP's insider endpoints are paid-tier
+only. Reconsider for v2 if we upgrade or find a free alternative.
 """
 
 from __future__ import annotations
@@ -84,6 +86,3 @@ class FMPClient:
         return await self._get(
             "/stable/cash-flow-statement", {"symbol": ticker, "limit": limit}
         )
-
-    async def insider_trading(self, ticker: str) -> list[dict[str, Any]]:
-        return await self._get("/stable/insider-trading-search", {"symbol": ticker})
