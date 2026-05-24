@@ -48,7 +48,7 @@ class FMPClient:
         last_exc: Exception | None = None
         for attempt in (1, 2):
             try:
-                async with httpx.AsyncClient(timeout=30.0) as client:
+                async with httpx.AsyncClient(timeout=10.0) as client:
                     resp = await client.get(f"{BASE_URL}{path}", params=params)
                     resp.raise_for_status()
                     return resp.json()

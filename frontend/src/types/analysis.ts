@@ -11,9 +11,12 @@ export type FinalSignal =
   | "buy_with_caution"
   | "sell_with_caution";
 
+export type AgentStatus = "success" | "partial" | "error";
+
 export interface AgentResult {
   agent: AgentName;
   ticker: string;
+  status: AgentStatus;
   signal: Signal;
   summary: string;
   data: Record<string, unknown>;

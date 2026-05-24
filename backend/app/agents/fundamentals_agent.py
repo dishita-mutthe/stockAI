@@ -36,6 +36,17 @@ class FundamentalsAgent(BaseAgent):
             return_exceptions=True,
         )
 
+        # Invalid-ticker short-circuit (FRD FA-05): FMP returns 200 with [] for
+        # /stable/profile when the symbol doesn't exist. No point spending an
+        # LLM call to reason over nothing — bail with status=error.
+        if not isinstance(profile, Exception) and profile == []:
+            logger.info("FMP returned empty profile for %s; treating as unknown ticker", ticker)
+            return {
+                "_status": "error",
+                "_error_message": f"Unknown ticker: {ticker!r} not found on FMP",
+                "profile": [],
+            }
+
         sources = {
             "profile": profile,
             "income_statement": income,
