@@ -68,7 +68,9 @@ class FundamentalsAgent(BaseAgent):
                 logger.warning("FMP %s failed for %s: %s", key, ticker, value)
                 payload[key] = None
             else:
-                payload[key] = value[:10] if key == "insider_trading" else value
+                # FRD §10 default: cap insider trades at the 5 most recent so the
+                # LLM prompt stays compact and we don't pay for tokens on stale rows.
+                payload[key] = value[:5] if key == "insider_trading" else value
 
         if errors:
             payload["_fetch_errors"] = errors
