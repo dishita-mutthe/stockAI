@@ -31,6 +31,20 @@ class FinalSignal(str, Enum):
     SELL_WITH_CAUTION = "sell_with_caution"
 
 
+class AgentStatus(str, Enum):
+    """Per-agent run status (FRD §5).
+
+    - SUCCESS: every data fetch + LLM call completed cleanly.
+    - PARTIAL: one or more data fetches failed but a signal was still produced.
+    - ERROR:   the agent could not produce a usable signal at all
+               (e.g. invalid ticker, all fetches failed, or LLM call failed).
+    """
+
+    SUCCESS = "success"
+    PARTIAL = "partial"
+    ERROR = "error"
+
+
 class AnalysisRequest(BaseModel):
     ticker: str = Field(..., min_length=1, max_length=10, examples=["AAPL"])
     agents: list[AgentName] = Field(
@@ -44,6 +58,7 @@ class AgentResult(BaseModel):
 
     agent: AgentName
     ticker: str
+    status: AgentStatus = AgentStatus.SUCCESS
     signal: Signal
     summary: str
     data: dict[str, Any] = Field(
