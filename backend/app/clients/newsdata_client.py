@@ -1,11 +1,7 @@
-"""NewsData.io client (News Agent FRD §6).
+"""NewsData.io client (BRD §6.3).
 
 Free tier: 200 credits/day, up to 2,000 articles/day across 88k+ sources.
-We use the ``/latest`` endpoint — date-range filtering (``from_date``) is a paid
-archive feature, so we rely on ``/latest``'s natural recency instead.
-
-No retry logic (FRD §6.1): any HTTP error bubbles up via ``raise_for_status`` to
-the base agent's error handler, which returns an ``error`` AgentResult.
+Provides built-in AI sentiment / tags / summaries / event categorization.
 """
 
 from __future__ import annotations
@@ -26,18 +22,14 @@ class NewsDataClient:
     async def latest(
         self,
         query: str,
+        category: str = "business",
         language: str = "en",
-        size: int = 3,
+        size: int = 10,
     ) -> dict[str, Any]:
-        """Fetch up to ``size`` recent articles matching ``query``.
-
-        FRD §6.2 query parameters: apikey, q, language, size. ``category`` is
-        intentionally omitted — NewsData has no ``finance`` category and the
-        bare-ticker query is already topical enough.
-        """
         params: dict[str, Any] = {
             "apikey": self.api_key,
             "q": query,
+            "category": category,
             "language": language,
             "size": size,
         }

@@ -7,8 +7,7 @@ from typing import Annotated, TypedDict
 
 from app.models.schemas import AgentName, AgentResult, SupervisorResult
 
-# when multiple nodes return agent_results, combine the lists using the '+' operator
-# instead of overwriting each one using "operator.add". 
+
 class AnalysisState(TypedDict, total=False):
     ticker: str
     enabled_agents: list[AgentName]
