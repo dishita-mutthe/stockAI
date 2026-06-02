@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     # LLM
     anthropic_api_key: str = ""
-    anthropic_model: str = "claude-sonnet-4-20250514"
+    anthropic_model: str = "claude-sonnet-4-6"
 
     # Data sources
     fmp_api_key: str = ""
